@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model MockInterview {
+  id            Int      @id @default(autoincrement())
+  jsonMockResp  String   // Use String if you want absolute safety, or Json if using raw Postgres features
+  jobPosition   String
+  jobDesc       String
+  jobExperience String
+  createdBy     String   // User's Email or Clerk ID
+  createdAt     DateTime @default(now())
+  mockId        String   @unique // The UUID you will generate for the URL
+  
+  UserAnswers   UserAnswer[]
+}
+
+model UserAnswer {
+  id             Int      @id @default(autoincrement())
+  mockIdRef      String   // Foreign key linking to MockInterview.mockId
+  question       String
+  correctAnswer  String?
+  userAns        String?
+  feedback       String?
+  rating         String?
+  userEmail      String?
+  createdAt      DateTime @default(now())
+
+  mockInterview  MockInterview @relation(fields: [mockIdRef], references: [mockId])
+}
