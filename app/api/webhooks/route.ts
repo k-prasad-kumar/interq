@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const evt = await verifyWebhook(request);
 
     // Handle specific event types
-    if (evt.type === "user.created") {
+    if (evt.type === "user.created" || evt.type === "user.updated") {
       // Handle user creation
       const { id, email_addresses, first_name, last_name, image_url } =
         evt.data;
@@ -18,28 +18,15 @@ export async function POST(request: Request) {
       // Combine names safely
       const name = `${first_name || ""} ${last_name || ""}`.trim();
 
-      await prisma.user.create({
-        data: {
-          clerkId: id,
+      await prisma.user.upsert({
+        where: { clerkId: id },
+        update: {
           email: primaryEmail,
           name: name,
           imageUrl: image_url,
         },
-      });
-    } else if (evt.type === "user.updated") {
-      // Handle user updates
-      const { id, email_addresses, first_name, last_name, image_url } =
-        evt.data;
-
-      // Clerk sends an array of emails. We usually want the primary one.
-      // The safe way is to grab the first one if it exists.
-      const primaryEmail = email_addresses[0]?.email_address;
-
-      // Combine names safely
-      const name = `${first_name || ""} ${last_name || ""}`.trim();
-      await prisma.user.update({
-        where: { clerkId: id as string },
-        data: {
+        create: {
+          clerkId: id,
           email: primaryEmail,
           name: name,
           imageUrl: image_url,

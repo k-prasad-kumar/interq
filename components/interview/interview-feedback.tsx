@@ -33,7 +33,7 @@ export const InterviewFeedback = () => {
         </div>
       </section>
 
-      <main className="grow max-w-7xl w-full mx-auto px-0 sm:px-2 md:px-4 lg:px-8 py-8 pb-32">
+      <section className="grow max-w-7xl w-full mx-auto px-0 sm:px-2 md:px-4 lg:px-8 py-8 pb-32">
         {/* <!-- Score Overview --> */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           {/* <!-- Circular Chart --> */}
@@ -381,7 +381,7 @@ export const InterviewFeedback = () => {
             </div>
           </div>
         </div>
-      </main>
+      </section>
       {/* <!-- Sticky Footer --> */}
       <div className="fixed bottom-0 left-0 right-0 bg-surface-light/80 dark:bg-surface-dark/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-4 px-4 z-10">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

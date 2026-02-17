@@ -54,7 +54,7 @@ export const NewSession = () => {
                 <div className="flex justify-between items-center">
                   <label
                     className="block text-base font-bold text-slate-700 dark:text-slate-200"
-                    htmlFor="job-description"
+                    htmlFor="job-position"
                   >
                     Job Position
                   </label>
