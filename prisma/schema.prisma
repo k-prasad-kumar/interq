@@ -13,29 +13,111 @@ datasource db {
   provider = "postgresql"
 }
 
-model MockInterview {
-  id            Int      @id @default(autoincrement())
-  jsonMockResp  String   // Use String if you want absolute safety, or Json if using raw Postgres features
-  jobPosition   String
-  jobDesc       String
-  jobExperience String
-  createdBy     String   // User's Email or Clerk ID
-  createdAt     DateTime @default(now())
-  mockId        String   @unique // The UUID you will generate for the URL
+// --------------------------------------
+// MODEL 1: THE USER (Dashboard Owner)
+// --------------------------------------
+model User {
+  id            String    @id @default(uuid())
+  clerkId       String    @unique // If using Clerk
+  email         String    @unique
+  name          String?
+  imageUrl      String?
+  plan          String    @default("free") // "Pro Plan" from Screen 1
   
-  UserAnswers   UserAnswer[]
+  // Dashboard Stats (Calculated or Cached)
+  // We can compute these, but storing them makes the dashboard load instant
+  averageScore  Float     @default(0.0) 
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  interviews    MockInterview[]
+  skills        UserSkill[]      // For "Skill Strength" section
 }
 
-model UserAnswer {
-  id             Int      @id @default(autoincrement())
-  mockIdRef      String   // Foreign key linking to MockInterview.mockId
-  question       String
-  correctAnswer  String?
-  userAns        String?
-  feedback       String?
-  rating         String?
-  userEmail      String?
-  createdAt      DateTime @default(now())
+// --------------------------------------
+// MODEL 2: THE INTERVIEW SESSION
+// --------------------------------------
+// Handles: "Recent Activity", "New Session Inputs", and "Feedback Header"
+model MockInterview {
+  id              String           @id @default(uuid())
+  
+  // A. INPUTS (From "New Session" Page - Screen 2)
+  jobPosition     String           // e.g. "Senior Frontend Dev"
+  jobDesc         String           // The long text pasted
+  jobExperience   String           // "Junior", "Mid-Level", "Senior"
+  resumeText      String?          // Extracted text from resume  // TODO: if i extract text from resume, save it here
+  
+  // B. STATUS & METADATA (From "Recent Activity" - Screen 1)
+  status          InterviewStatus  @default(IN_PROGRESS)
+  createdAt       DateTime         @default(now())
+  duration        Int              @default(0) // In seconds (e.g. 24m 12s)
 
-  mockInterview  MockInterview @relation(fields: [mockIdRef], references: [mockId])
+  // C. SCORES (From "Feedback Report" - Screen 4)
+  overallScore        Int?         // The big "82"
+  technicalScore      Int?         // "88/100"
+  communicationScore  Int?         // "76/100"
+  confidenceScore     Int?         // "92/100"
+  
+  // D. FEEDBACK SUMMARY (From Screen 4)
+  feedbackTitle       String?      // "Excellent Performance!"
+  feedbackSummary     String?      // The paragraph below the title
+  
+  // E. DETAILED FEEDBACK (Stored as JSON for flexibility)
+  // This stores the "Key Strengths" and "Areas for Improvement" lists
+  // Structure: { strengths: [{title, desc}], improvements: [{title, desc}] }
+  feedbackDetails     Json?        
+
+  // Relations
+  userId          String
+  user            User             @relation(fields: [userId], references: [clerkId])
+  questions       Question[]       // The Transcript
+}
+
+// --------------------------------------
+// MODEL 3: QUESTIONS & TRANSCRIPT
+// --------------------------------------
+// Handles: "Active Interview" (Screen 3) & "Interview Transcript" (Screen 4)
+model Question {
+  id                String   @id @default(uuid())
+  questionText      String   // "Can you describe a time..."
+  questionOrder     Int      // 1, 2, 3...
+  category          String?  // "Behavioral", "Technical" (Tag from Screen 3)
+  answer            String?  // AI Answer
+  
+  // The User's Response
+  userAnswer        String?  // Transcribed text: "Sure. Um, in my last project..."
+  
+  // AI Analysis of this specific answer
+  feedback          String?  // "Good use of STAR method but..."
+  rating            Int?     // Score for this specific answer
+  
+  // Specific Highlights (Screen 4 Transcript)
+  // Stores "checking local storage" (Green) or "Um" (Red)
+  // Structure: [{ text: "Um", type: "negative" }, { text: "local storage", type: "positive" }]
+  transcriptInsights Json? // TODO : if i can manage these insights then add or else remove   
+
+  mockInterviewId   String
+  mockInterview     MockInterview @relation(fields: [mockInterviewId], references: [id])
+}
+
+// --------------------------------------
+// MODEL 4: USER SKILLS
+// --------------------------------------
+// Handles: "Skill Strength" Widget (Screen 1)
+model UserSkill {
+  id           String   @id @default(uuid())
+  skillName    String   // "React / Frontend", "System Design"
+  proficiency  Int      @default(0) // 90, 65, 45
+  isTarget     Boolean  @default(false) // If added via "Add Target Skill"
+  
+  userId       String
+  user         User     @relation(fields: [userId], references: [clerkId])
+}
+
+// Enums make the data strict and clean
+enum InterviewStatus {
+  IN_PROGRESS
+  COMPLETED
 }
