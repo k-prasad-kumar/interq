@@ -6,21 +6,37 @@ import {
   LightbulbIcon,
   PlayIcon,
   Share2Icon,
-  TriangleAlertIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Signin from "@/assets/signin.webp";
+import { MockInterview } from "@/types/interview";
+import Link from "next/link";
 
-export const InterviewFeedback = () => {
+export const InterviewFeedback = ({
+  userImage,
+  interview,
+}: {
+  userImage: string;
+  interview: MockInterview;
+}) => {
+  const overallScore = `${interview.overallScore}, 100`;
+
   return (
     <main className="w-full max-w-7xl mx-auto mt-5 px-4 gap-8 flex flex-col">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Interview #41 Feedback
+            Interview Feedback
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Completed on Oct 24, 2023 • Duration: 24m 12s
+            Completed on{" "}
+            <span>
+              {new Date(interview.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>{" "}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -44,16 +60,17 @@ export const InterviewFeedback = () => {
                   className="circle-bg"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 ></path>
-                {/* here i have to change the stroke-dasharray */}
+
                 <path
                   className="circle"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  strokeDasharray="82, 100"
+                  // strokeDasharray={overallScore}
+                  strokeDasharray={overallScore}
                 ></path>
               </svg>
               <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
                 <span className="text-4xl font-bold text-slate-900 dark:text-white">
-                  82
+                  {interview.overallScore}
                 </span>
                 <span className="text-xs uppercase font-medium text-slate-500 dark:text-slate-400 tracking-wide mt-1">
                   Score
@@ -68,14 +85,11 @@ export const InterviewFeedback = () => {
                 Top 15%
               </span>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                Excellent Performance!
+                {interview.feedbackTitle}
               </h2>
             </div>
             <p className="text-slate-600 dark:text-slate-300 mb-4">
-              You demonstrated strong technical knowledge and clear
-              communication. Your answers regarding React hooks and state
-              management were particularly impressive. There are minor
-              opportunities to improve pacing during complex explanations.
+              {interview.feedbackSummary}
             </p>
             {/* <!-- Quick stats --> */}
             <div className="grid grid-cols-3 gap-4 border-t border-slate-100 dark:border-slate-700/50 pt-4">
@@ -84,7 +98,7 @@ export const InterviewFeedback = () => {
                   Technical
                 </div>
                 <div className="text-lg font-semibold text-slate-900 dark:text-white">
-                  88/100
+                  {interview.technicalScore}/100
                 </div>
               </div>
               <div>
@@ -92,7 +106,7 @@ export const InterviewFeedback = () => {
                   Communication
                 </div>
                 <div className="text-lg font-semibold text-slate-900 dark:text-white">
-                  76/100
+                  {interview.communicationScore}/100
                 </div>
               </div>
               <div>
@@ -100,7 +114,7 @@ export const InterviewFeedback = () => {
                   Confidence
                 </div>
                 <div className="text-lg font-semibold text-slate-900 dark:text-white">
-                  92/100
+                  {interview.confidenceScore}/100
                 </div>
               </div>
             </div>
@@ -124,48 +138,25 @@ export const InterviewFeedback = () => {
                 </h3>
               </div>
               <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-                <li className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
-                  <div className="flex gap-3">
-                    <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                        STAR Method Usage
-                      </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Excellent structure in answering the behavioral question
-                        about conflict resolution.
-                      </p>
-                    </div>
-                  </div>
-                </li>
-                <li className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
-                  <div className="flex gap-3">
-                    <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                        Technical Depth
-                      </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Correctly identified the race condition in the
-                        asynchronous JavaScript challenge.
-                      </p>
-                    </div>
-                  </div>
-                </li>
-                <li className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
-                  <div className="flex gap-3">
-                    <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                        Active Listening
-                      </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Asked clarifying questions before jumping into the
-                        solution.
-                      </p>
-                    </div>
-                  </div>
-                </li>
+                {interview.feedbackDetails?.strengths &&
+                  interview.feedbackDetails?.strengths.map((item, index) => (
+                    <li
+                      className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
+                      key={index}
+                    >
+                      <div className="flex gap-3">
+                        <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                            {item.title}
+                          </p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
               </ul>
             </div>
             {/* <!-- Improvements --> */}
@@ -182,34 +173,25 @@ export const InterviewFeedback = () => {
                 </h3>
               </div>
               <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-                <li className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
-                  <div className="flex gap-3">
-                    <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-orange-500"></div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                        Speaking Pace
-                      </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Spoke at 160wpm during the intro, which is slightly
-                        fast. Aim for 130-140wpm.
-                      </p>
-                    </div>
-                  </div>
-                </li>
-                <li className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
-                  <div className="flex gap-3">
-                    <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-orange-500"></div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                        Filler Words
-                      </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Detected 12 instances of &quot;um&quot; and
-                        &quot;like&quot;. Try pausing silently instead.
-                      </p>
-                    </div>
-                  </div>
-                </li>
+                {interview.feedbackDetails?.improvements &&
+                  interview.feedbackDetails?.improvements.map((item, index) => (
+                    <li
+                      className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
+                      key={index}
+                    >
+                      <div className="flex gap-3">
+                        <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-orange-500"></div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                            {item.title}
+                          </p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
               </ul>
             </div>
           </div>
@@ -237,147 +219,53 @@ export const InterviewFeedback = () => {
             </div>
             {/* <!-- Scrollable Body --> */}
             <div className="grow overflow-y-auto px-3 md:px-6 py-4 md:py-6 space-y-6 custom-scrollbar">
-              {/* <!-- AI Message --> */}
-              <div className="flex gap-4">
-                <div className="shrink-0">
-                  <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary">
-                    <BotIcon size={18} />
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                      InterQ AI
-                    </span>
-                    <span className="text-xs text-slate-400">00:05</span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                    Let&apos;s start with a technical question. Can you describe
-                    a challenging bug you encountered recently and how you
-                    solved it?
-                  </p>
-                </div>
-              </div>
-              {/* <!-- User Message --> */}
-              <div className="flex gap-4">
-                <div className="shrink-0">
-                  <Image
-                    className="w-8 h-8 rounded-full"
-                    width={32}
-                    height={32}
-                    alt="User Avatar"
-                    src={Signin}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                      You
-                    </span>
-                    <span className="text-xs text-slate-400">00:18</span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                    Sure.{" "}
-                    <span
-                      className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-1 rounded cursor-help border-b border-orange-300 dark:border-orange-700 border-dashed"
-                      title="Filler word detected"
-                    >
-                      Um
-                    </span>
-                    , in my last project, we had a really strange issue where
-                    the user session would drop randomly. At first, I thought it
-                    was a frontend state issue.
-                  </p>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mt-2">
-                    I started by{" "}
-                    <span
-                      className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 px-1 rounded cursor-help border-b border-green-300 dark:border-green-700 border-dashed"
-                      title="Good systematic approach"
-                    >
-                      checking the local storage and Redux store
-                    </span>{" "}
-                    to see if the token was being cleared. It wasn&apos;t. Then
-                    I looked at the network tab and noticed some 401 errors on
-                    specific endpoints.
-                  </p>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mt-2">
-                    It turned out to be a race condition in the refresh token
-                    logic. When multiple requests fired at once, the first one
-                    would refresh the token, but subsequent ones were still
-                    using the old token before the new one came back. I fixed it
-                    by implementing a queue system for requests while the token
-                    was refreshing.
-                  </p>
-                </div>
-              </div>
-              {/* <!-- AI Message --> */}
-              <div className="flex gap-4">
-                <div className="shrink-0">
-                  <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary">
-                    <BotIcon size={18} />
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                      InterQ AI
-                    </span>
-                    <span className="text-xs text-slate-400">01:45</span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                    That&apos;s a great example of debugging a concurrency
-                    issue. Moving on to soft skills, tell me about a time you
-                    disagreed with a teammate.
-                  </p>
-                </div>
-              </div>
-              {/* <!-- User Message --> */}
-              <div className="flex gap-4">
-                <div className="shrink-0">
-                  <Image
-                    className="w-8 h-8 rounded-full"
-                    width={32}
-                    height={32}
-                    alt="User Avatar"
-                    src={Signin}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                      You
-                    </span>
-                    <span className="text-xs text-slate-400">02:10</span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                    So,{" "}
-                    <span
-                      className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-1 rounded cursor-help border-b border-orange-300 dark:border-orange-700 border-dashed"
-                      title="Filler word detected"
-                    >
-                      like
-                    </span>
-                    , there was this time a designer wanted a feature that was
-                    technically very heavy. I just told him no immediately
-                    because of the deadline.
-                  </p>
-                  <div className="mt-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded border-l-4 border-orange-400">
-                    <p className="text-xs text-orange-800 dark:text-orange-200 font-medium mb-1 flex items-center gap-2">
-                      <TriangleAlertIcon size={14} /> AI Insight: Tone Check
-                    </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
-                      This initial response sounds a bit defensive. Consider
-                      framing it as a trade-off discussion instead of a flat
-                      refusal.
-                    </p>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mt-2">
-                    But later I realized I should have explained *why*. So I
-                    went back, apologized for being abrupt, and we sketched out
-                    a simpler version that met his goals but fit the timeline.
-                  </p>
-                </div>
-              </div>
+              {interview.questions &&
+                interview.questions.map((question) => (
+                  <span className="flex flex-col gap-4" key={question.id}>
+                    {/* <!-- AI Message --> */}
+                    <div className="flex gap-4">
+                      <div className="shrink-0">
+                        <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+                          <BotIcon size={18} />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                            InterQ AI
+                          </span>
+                          <span className="text-xs text-slate-400">00:05</span>
+                        </div>
+                        <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                          {question.questionText}
+                        </p>
+                      </div>
+                    </div>
+                    {/* <!-- User Message --> */}
+                    <div className="flex gap-4">
+                      <div className="shrink-0">
+                        <Image
+                          className="w-8 h-8 rounded-full"
+                          width={32}
+                          height={32}
+                          alt="User Avatar"
+                          src={userImage}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                            You
+                          </span>
+                          <span className="text-xs text-slate-400">00:18</span>
+                        </div>
+                        <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                          {question.userAnswer}
+                        </p>
+                      </div>
+                    </div>
+                  </span>
+                ))}
             </div>
           </div>
         </div>
@@ -393,12 +281,18 @@ export const InterviewFeedback = () => {
             </span>
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto justify-end">
-            <button className="flex-1 md:flex-none justify-center px-6 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-medium text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors cursor-pointer">
+            <Link
+              href="/"
+              className="flex-1 md:flex-none justify-center px-6 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-medium text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors cursor-pointer"
+            >
               Back to Dashboard
-            </button>
-            <button className="flex-1 md:flex-none justify-center px-6 py-2.5 bg-primary hover:bg-primary-hover text-white font-medium text-sm rounded-lg shadow-lg shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all transform active:scale-95 cursor-pointer">
+            </Link>
+            <Link
+              href={`/interview-room/${interview.id}`}
+              className="flex-1 md:flex-none justify-center px-6 py-2.5 bg-primary hover:bg-primary-hover text-white font-medium text-sm rounded-lg shadow-lg shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all transform active:scale-95 cursor-pointer"
+            >
               Retry Interview
-            </button>
+            </Link>
           </div>
         </div>
       </div>

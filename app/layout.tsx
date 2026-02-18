@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const nunitoSans = Nunito_Sans({ variable: "--font-sans" });
 
@@ -39,6 +40,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster position="top-center" />
           </ThemeProvider>
         </body>
       </html>
