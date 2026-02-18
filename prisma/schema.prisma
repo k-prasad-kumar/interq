@@ -45,7 +45,7 @@ model MockInterview {
   
   // A. INPUTS (From "New Session" Page - Screen 2)
   jobPosition     String           // e.g. "Senior Frontend Dev"
-  jobDesc         String           // The long text pasted
+  jobDescription  String           // The long text pasted
   jobExperience   String           // "Junior", "Mid-Level", "Senior"
   resumeText      String?          // Extracted text from resume  // TODO: if i extract text from resume, save it here
   
@@ -71,7 +71,7 @@ model MockInterview {
 
   // Relations
   userId          String
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   questions       Question[]       // The Transcript
 }
 
@@ -113,7 +113,7 @@ model UserSkill {
   isTarget     Boolean  @default(false) // If added via "Add Target Skill"
   
   userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
 }
 
 // Enums make the data strict and clean

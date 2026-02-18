@@ -6,24 +6,40 @@ import {
   BriefcaseBusinessIcon,
   CloudUploadIcon,
   GraduationCapIcon,
+  LoaderCircleIcon,
   LockKeyholeIcon,
   SparklesIcon,
 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { useState } from "react";
+import { createMockInterview } from "@/lib/actions/interview-actions";
+import { useRouter } from "next/navigation";
 
 export const NewSession = () => {
+  const [loading, setLoading] = useState(false);
+  const [disable, setDisable] = useState(false);
   const [level, setLevel] = useState("");
+  const router = useRouter();
 
   const handleLevel = (level: string) => {
     setLevel(level);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+    setDisable(true);
+
     const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData);
-    console.log(data);
+
+    const result = await createMockInterview(formData);
+
+    if (result.error) console.error(result.error);
+
+    if (result.mockId) router.push(`/interview-room/${result.mockId}`);
+
+    setLoading(false);
+    setDisable(false);
   };
 
   return (
@@ -66,10 +82,11 @@ export const NewSession = () => {
                   <input
                     className="w-full rounded-lg border-violet-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 outline-violet-500 focus:border-violet-500 focus:ring-violet-500 transition-shadow resize-none p-4 text-sm leading-relaxed shadow border"
                     id="job-position"
-                    name="job-position"
+                    name="jobPosition"
                     type="text"
                     placeholder="Software Engineer"
                     required
+                    disabled={disable}
                   />
                 </div>
               </div>
@@ -90,10 +107,11 @@ export const NewSession = () => {
                   <textarea
                     className="w-full rounded-lg border-violet-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 outline-violet-500 focus:border-violet-500 focus:ring-violet-500 transition-shadow resize-none p-4 text-sm leading-relaxed shadow border"
                     id="job-description"
-                    name="job-description"
+                    name="jobDescription"
                     placeholder="Paste the full job description here (responsibilities, requirements, tech stack)..."
                     rows={6}
                     required
+                    disabled={disable}
                   ></textarea>
                   <div className="absolute bottom-3 right-3 flex gap-2">
                     <button
@@ -122,6 +140,7 @@ export const NewSession = () => {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     type="file"
                     name="resume"
+                    disabled={disable}
                   />
                   <div className="flex flex-col items-center justify-center space-y-3 pointer-events-none">
                     <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary mb-1 group-hover:scale-110 transition-transform duration-300">
@@ -150,11 +169,12 @@ export const NewSession = () => {
                     <input
                       className="peer sr-only"
                       id="level-junior"
-                      name="difficulty"
+                      name="jobExperience"
                       type="radio"
                       value="Junior"
                       onChange={() => handleLevel("Junior")}
                       required
+                      disabled={disable}
                     />
                     <label
                       className={`flex flex-col items-center justify-center py-3 px-2 rounded-md cursor-pointer transition-all  border border-transparent font-semibold h-full gap-2 ${level === "Junior" ? "bg-violet-600 dark:bg-violet-600 text-white dark:text-white hover:bg-violet-600 dark:hover:bg-violet-600" : "hover:bg-violet-200/50 dark:hover:bg-violet-800/50 text-slate-600 dark:text-slate-400"}`}
@@ -169,11 +189,12 @@ export const NewSession = () => {
                     <input
                       className="peer sr-only"
                       id="level-mid"
-                      name="difficulty"
+                      name="jobExperience"
                       type="radio"
                       value="Mid-level"
                       onChange={() => handleLevel("Mid-level")}
                       required
+                      disabled={disable}
                     />
 
                     <label
@@ -189,11 +210,12 @@ export const NewSession = () => {
                     <input
                       className="peer sr-only"
                       id="level-senior"
-                      name="difficulty"
+                      name="jobExperience"
                       type="radio"
                       value="Senior"
                       onChange={() => handleLevel("Senior")}
                       required
+                      disabled={disable}
                     />
                     <label
                       className={`flex flex-col items-center justify-center py-3 px-2 rounded-md cursor-pointer transition-all  border border-transparent font-semibold h-full gap-2 ${level === "Senior" ? "bg-violet-600 dark:bg-violet-600 text-white dark:text-white hover:bg-violet-600 dark:hover:bg-violet-600" : "hover:bg-violet-200/50 dark:hover:bg-violet-800/50 text-slate-600 dark:text-slate-400"}`}
@@ -211,9 +233,13 @@ export const NewSession = () => {
                   className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-4 px-6 rounded-lg shadow-lg shadow-primary/25 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2 group cursor-pointer"
                   type="submit"
                 >
-                  <span className="group-hover:animate-pulse">
-                    <BotIcon />
-                  </span>
+                  {loading ? (
+                    <LoaderCircleIcon className="animate-spin" />
+                  ) : (
+                    <span className="group-hover:animate-pulse">
+                      <BotIcon />
+                    </span>
+                  )}
                   Generate Interview
                 </button>
                 <p className="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1">
