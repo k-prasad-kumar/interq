@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { ModeToggle } from "../theme-toggle";
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import logo from "@/assets/logo.webp";
 import signin from "@/assets/signin.webp";
-import { CustomUserButton } from "./custom-user-button";
 import Link from "next/link";
 
 export const Navbar = () => {
@@ -20,7 +19,7 @@ export const Navbar = () => {
           />
           <p className="text-xl font-semibold">InterQ</p>
         </Link>
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center gap-3">
           <SignedOut>
             <SignInButton>
               <Image
@@ -33,7 +32,7 @@ export const Navbar = () => {
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <CustomUserButton />
+            <UserButton />
           </SignedIn>
           <ModeToggle />
         </div>

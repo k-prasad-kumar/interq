@@ -119,3 +119,21 @@ export interface QuestionsBeforeUpdate {
   category: string | null;
   answer: string | null; // AI's ideal answer
 }
+
+export interface MockInterviewHistory {
+  id: string;
+  // Inputs
+  jobPosition: string;
+  jobExperience: string;
+  // Status
+  status: InterviewStatus;
+  createdAt: Date;
+  // Scores
+  overallScore: number | null;
+}
+
+export interface DashboardStats {
+  averageScore: number;
+  completedInterviews: number;
+  totalInterviews: number;
+}

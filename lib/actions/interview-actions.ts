@@ -10,7 +10,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 export async function createMockInterview(formData: FormData) {
   const user = await currentUser();
 
-  if (!user) throw new Error("Unauthorized");
+  if (!user) return;
 
   const jobPosition = formData.get("jobPosition") as string;
   const jobDescription = formData.get("jobDescription") as string;
@@ -20,9 +20,6 @@ export async function createMockInterview(formData: FormData) {
     return {
       error: "Missing required fields: jobPosition, jobDesc, jobExperience",
     };
-
-  // 1. Configure AI
-  //   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   // 2. Prompt for Specific JSON Structure
   // We ask for 'category' to fill your schema's category field
@@ -165,9 +162,6 @@ export async function endInterview(mockId: string) {
     Return ONLY valid JSON.
   `;
 
-  //   const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
-  //   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
   const result = await model.generateContent(prompt);
   const responseText = result.response
     .text()
@@ -218,5 +212,105 @@ export async function fetchMockInterview(interviewId: string) {
   } catch (error) {
     console.error("Error fetching interview:", error);
     throw new Error("Failed to fetch interview details");
+  }
+}
+
+export async function fetchInterviewHistory(q: string, page: string) {
+  const user = await currentUser();
+
+  if (!user) return;
+  const itemsPerPage: number = Number(process.env.NEXT_PUBLIC_ITEMS_PER_PAGE);
+  try {
+    const interviews = await prisma.mockInterview.findMany({
+      where: {
+        userId: user.id, // Only fetch for the logged-in user
+      },
+      select: {
+        id: true,
+        jobPosition: true,
+        jobExperience: true,
+        status: true,
+        createdAt: true,
+        overallScore: true,
+        // We select ONLY what you asked for to keep it fast
+      },
+      orderBy: {
+        createdAt: "desc", // Show newest first
+      },
+      take: itemsPerPage,
+      skip: itemsPerPage * (Number(page) - 1),
+    });
+
+    return interviews;
+  } catch (error) {
+    console.error("Error fetching interviews:", error);
+    return [];
+  }
+}
+
+export async function fetchDashboardStats() {
+  const user = await currentUser();
+
+  if (!user) return;
+
+  try {
+    const stats = await prisma.mockInterview.aggregate({
+      where: {
+        userId: user.id, // Only calculate for this user
+      },
+      // 1. Calculate Average Score (Only for completed interviews with scores)
+      _avg: {
+        overallScore: true,
+      },
+      // 2. Count Total Interviews
+      _count: {
+        _all: true, // Total interviews created
+      },
+    });
+
+    // 3. Count Completed Interviews specifically
+    // We run a separate fast count for just "COMPLETED" status
+    const completedCount = await prisma.mockInterview.count({
+      where: {
+        userId: user.id,
+        status: "COMPLETED",
+      },
+    });
+
+    return {
+      averageScore: Math.round(stats._avg.overallScore || 0), // Round to whole number (e.g., 78)
+      completedInterviews: completedCount,
+      totalInterviews: stats._count._all,
+    };
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    return {
+      averageScore: 0,
+      completedInterviews: 0,
+      totalInterviews: 0,
+    };
+  }
+}
+export async function fetchInterviewsCount() {
+  const user = await currentUser();
+
+  if (!user) return;
+
+  try {
+    const stats = await prisma.mockInterview.aggregate({
+      where: {
+        userId: user.id, // Only calculate for this user
+      }, // 2. Count Total Interviews
+      _count: {
+        _all: true, // Total interviews created
+      },
+    });
+
+    return stats._count._all;
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    return {
+      totalInterviews: 0,
+    };
   }
 }

@@ -10,10 +10,10 @@ import {
   LightbulbIcon,
   LogOutIcon,
   MicIcon,
-  RotateCwIcon,
   SkipForwardIcon,
   CheckCircle2Icon,
   SquareIcon,
+  Volume2Icon,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
@@ -32,6 +32,7 @@ export const InterviewRoom = ({
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [isAudioEnabled] = useState(true); // Allow user to toggle
 
   // --- SPEECH RECOGNITION HOOKS ---
   const {
@@ -45,7 +46,6 @@ export const InterviewRoom = ({
   useEffect(() => {
     // Only update if there is actual transcribed text
     if (transcript.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUserAnswer(transcript);
     }
   }, [transcript]);
@@ -53,6 +53,36 @@ export const InterviewRoom = ({
   // Get the active question object
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
+
+  const speakQuestion = () => {
+    // 1. Stop any previous speech
+    window.speechSynthesis.cancel();
+
+    if (isAudioEnabled && currentQuestion) {
+      // 2. Create the utterance
+      const speech = new SpeechSynthesisUtterance(currentQuestion.questionText);
+
+      // 3. Optional: Customize voice
+      // const voices = window.speechSynthesis.getVoices();
+      // speech.voice = voices.find(v => v.lang === 'en-US') || null;
+      speech.rate = 1.0; // Normal speed
+      speech.pitch = 1.0; // Normal pitch
+      speech.volume = 1.0;
+
+      // 4. Speak
+      window.speechSynthesis.speak(speech);
+    }
+  };
+
+  useEffect(() => {
+    speakQuestion();
+
+    // Cleanup: Stop speaking if user leaves or component unmounts
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestion, currentQuestionIndex, isAudioEnabled]); // Triggers when question changes
 
   const toggleRecording = () => {
     if (listening) {
@@ -182,8 +212,11 @@ export const InterviewRoom = ({
               <span className="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full uppercase tracking-wider">
                 {currentQuestion?.category || "General"}
               </span>
-              <button className="text-slate-400 hover:text-blue-600 transition-colors">
-                <RotateCwIcon size={18} />
+              <button
+                className="text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
+                onClick={speakQuestion}
+              >
+                <Volume2Icon size={18} />
               </button>
             </div>
 
