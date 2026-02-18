@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description: "An Intelligent Job Interviewer | Interview Question Generator",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

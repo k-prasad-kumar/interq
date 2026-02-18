@@ -1,7 +1,27 @@
-import { BrainIcon, CodeIcon, ComponentIcon } from "lucide-react";
+import { CodeIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { MockInterviewHistory } from "@/types/interview";
+import { getRelativeTime } from "@/lib/get-relative-time";
+import Link from "next/link";
 
-export const RecentAcivity = () => {
+export const RecentAcivity = ({
+  history,
+}: {
+  history: MockInterviewHistory[];
+}) => {
+  const handleScoreColor = (score: number): string => {
+    if (score >= 70 && score <= 100) {
+      return "bg-green-500";
+    } else if (score >= 50 && score < 70) {
+      return "bg-yellow-500";
+    } else if (score >= 30 && score < 50) {
+      return "bg-orange-500";
+    } else if (score < 30 && score > 0) {
+      return "bg-red-500";
+    }
+
+    return "text-slate-500";
+  };
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-14">
       {/* <!-- Recent Activity List (Left 2/3) --> */}
@@ -11,12 +31,12 @@ export const RecentAcivity = () => {
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">
             Recent Activity
           </h2>
-          <a
+          <Link
             className="text-sm font-medium text-primary hover:text-primary-dark hover:underline"
-            href="#"
+            href="/history?page=1"
           >
             View All
-          </a>
+          </Link>
         </div>
         <Card className="p-0">
           <CardContent className="p-0">
@@ -35,96 +55,86 @@ export const RecentAcivity = () => {
                 </div>
                 <div className="col-span-2 text-right">Action</div>
               </div>
+
+              {history.length === 0 && (
+                <div className="p-4 text-sm text-slate-500 dark:text-slate-400 text-center">
+                  No activity found
+                </div>
+              )}
               {/* <!-- Row 1 --> */}
-              <div className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                <div className="col-span-5 md:col-span-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                    <CodeIcon size={14} />
+              {history &&
+                history.map((item, index) => (
+                  <div
+                    className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                    key={item + "-" + index}
+                  >
+                    <div className="col-span-5 md:col-span-4 flex items-center gap-3">
+                      <div className="w-8 h-8 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                        <CodeIcon size={14} />
+                      </div>
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white text-sm">
+                          {item.jobPosition}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {item.jobExperience}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="col-span-3 md:col-span-2 hidden md:block text-sm text-slate-500">
+                      {getRelativeTime(item.createdAt)}
+                    </div>
+                    <div className="col-span-3 md:col-span-2 flex justify-center">
+                      {item.status && item.status === "COMPLETED" && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                          {item.status}
+                        </span>
+                      )}
+                      {item.status && item.status === "IN_PROGRESS" && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                          {item.status}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="col-span-2 text-center">
+                      <div className="inline-flex flex-col items-center">
+                        <span className="text-sm font-bold text-slate-900 dark:text-white">
+                          {item.status && item.status === "COMPLETED"
+                            ? item.overallScore
+                            : "-"}
+                        </span>
+                        <div
+                          className={`w-12 bg-slate-200 dark:bg-slate-700 rounded-full h-1 mt-1 ${item.status && item.status === "IN_PROGRESS" && "hidden"}`}
+                        >
+                          <div
+                            className={`${item.overallScore && handleScoreColor(item.overallScore)} h-1 rounded-full`}
+                            style={{ width: `${item.overallScore}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-span-2 flex justify-end">
+                      {item.status && item.status === "COMPLETED" && (
+                        <Link
+                          href={`/interview/feedback/${item.id}`}
+                          className="text-xs font-medium text-primary border border-primary/20 hover:bg-primary/5 rounded px-3 py-1.5 transition-colors"
+                        >
+                          View
+                        </Link>
+                      )}
+                      {item.status && item.status === "IN_PROGRESS" && (
+                        <Link
+                          href={`/interview-room/${item.id}`}
+                          className="text-xs font-medium text-white bg-primary hover:bg-primary-dark rounded px-3 py-1.5 transition-colors shadow-sm shadow-primary/30"
+                        >
+                          Resume
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-slate-900 dark:text-white text-sm">
-                      Senior Frontend Dev
-                    </p>
-                    <p className="text-xs text-slate-500">Technical Round</p>
-                  </div>
-                </div>
-                <div className="col-span-3 md:col-span-2 hidden md:block text-sm text-slate-500">
-                  2 hours ago
-                </div>
-                <div className="col-span-3 md:col-span-2 flex justify-center">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                    Completed
-                  </span>
-                </div>
-                <div className="col-span-2 md:col-span-2 text-center text-sm font-bold text-slate-900 dark:text-white">
-                  9.0
-                </div>
-                <div className="col-span-2 flex justify-end">
-                  <button className="text-xs font-medium text-primary border border-primary/20 hover:bg-primary/5 rounded px-3 py-1.5 transition-colors">
-                    View
-                  </button>
-                </div>
-              </div>
-              {/* <!-- Row 2 --> */}
-              <div className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                <div className="col-span-5 md:col-span-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                    <ComponentIcon size={14} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900 dark:text-white text-sm">
-                      System Design
-                    </p>
-                    <p className="text-xs text-slate-500">Architecture</p>
-                  </div>
-                </div>
-                <div className="col-span-3 md:col-span-2 hidden md:block text-sm text-slate-500">
-                  Yesterday
-                </div>
-                <div className="col-span-3 md:col-span-2 flex justify-center">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                    In Progress
-                  </span>
-                </div>
-                <div className="col-span-2 md:col-span-2 text-center text-sm font-bold text-slate-400">
-                  --
-                </div>
-                <div className="col-span-2 flex justify-end">
-                  <button className="text-xs font-medium text-white bg-primary hover:bg-primary-dark rounded px-3 py-1.5 transition-colors shadow-sm shadow-primary/30">
-                    Resume
-                  </button>
-                </div>
-              </div>
-              {/* <!-- Row 3 --> */}
-              <div className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                <div className="col-span-5 md:col-span-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 flex items-center justify-center shrink-0">
-                    <BrainIcon size={14} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900 dark:text-white text-sm">
-                      Behavioral Interview
-                    </p>
-                    <p className="text-xs text-slate-500">Soft Skills</p>
-                  </div>
-                </div>
-                <div className="col-span-3 md:col-span-2 hidden md:block text-sm text-slate-500">
-                  2 days ago
-                </div>
-                <div className="col-span-3 md:col-span-2 flex justify-center">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                    Completed
-                  </span>
-                </div>
-                <div className="col-span-2 md:col-span-2 text-center text-sm font-bold text-slate-900 dark:text-white">
-                  7.5
-                </div>
-                <div className="col-span-2 flex justify-end">
-                  <button className="text-xs font-medium text-primary border border-primary/20 hover:bg-primary/5 rounded px-3 py-1.5 transition-colors">
-                    View
-                  </button>
-                </div>
-              </div>
+                ))}
             </div>
           </CardContent>
         </Card>

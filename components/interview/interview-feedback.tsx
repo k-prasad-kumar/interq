@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BotIcon,
   CheckCircle2Icon,
@@ -5,12 +7,15 @@ import {
   InfoIcon,
   LightbulbIcon,
   PlayIcon,
-  Share2Icon,
 } from "lucide-react";
 import Image from "next/image";
-import Signin from "@/assets/signin.webp";
-import { MockInterview } from "@/types/interview";
+import { MockInterview, Question } from "@/types/interview";
 import Link from "next/link";
+import { Share } from "./share";
+import { useRef, useState } from "react";
+import { toPng } from "html-to-image";
+import jsPDF from "jspdf";
+import { toast } from "sonner";
 
 export const InterviewFeedback = ({
   userImage,
@@ -19,15 +24,114 @@ export const InterviewFeedback = ({
   userImage: string;
   interview: MockInterview;
 }) => {
+  const [showButtons, setShowButtons] = useState(true);
   const overallScore = `${interview.overallScore}, 100`;
 
+  const playFullInterview = (questions: Question[]) => {
+    // Stop anything currently playing
+    window.speechSynthesis.cancel();
+
+    // Loop through all Q&A and queue them up
+    questions.forEach((q, index) => {
+      // 1. Speak the Question (AI Voice)
+      const questionSpeech = new SpeechSynthesisUtterance(
+        `Question ${index + 1}: ${q.questionText}`,
+      );
+      questionSpeech.rate = 1.1; // Slightly faster
+      window.speechSynthesis.speak(questionSpeech);
+
+      // 2. Speak the User's Answer (Different tone/rate to distinguish)
+      const answerText = q.userAnswer || "No answer provided.";
+      const answerSpeech = new SpeechSynthesisUtterance(
+        `Your Answer: ${answerText}`,
+      );
+      answerSpeech.rate = 1.0;
+      answerSpeech.pitch = 0.9; // Slightly deeper to sound like a different person
+      window.speechSynthesis.speak(answerSpeech);
+
+      // 3. Optional: Pause between Q&A
+      // We can't easily "sleep", but we can speak a silent character or just rely on natural pause
+    });
+  };
+
+  const printRef = useRef<HTMLDivElement>(null);
+  const exportPdf = async () => {
+    const element = printRef.current;
+    if (!element) return;
+    setShowButtons(false);
+    const toastId = toast.loading("Generating PDF...");
+
+    try {
+      // 1. DEFINE A FIXED DESKTOP WIDTH
+      // This ensures the PDF looks like the desktop version, not a mobile/cropped one.
+      const desktopWidth = 1400;
+      // We calculate height based on the new forced width (approximation) or just use scrollHeight
+      const elementHeight = element.scrollHeight;
+
+      // 2. Capture Image with Forced Dimensions
+      const dataUrl = await toPng(element, {
+        cacheBust: true,
+        // useCORS: true,
+        // Force the canvas to be this wide
+        width: desktopWidth,
+        height: elementHeight,
+        style: {
+          // Crucial: Force the element to layout at 1400px during capture
+          width: `${desktopWidth}px`,
+          height: "auto",
+          overflow: "visible",
+        },
+      });
+
+      // 3. Initialize PDF (A4 Portrait)
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgProps = pdf.getImageProperties(dataUrl);
+
+      // 4. Calculate PDF Dimensions
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      // Scale the 1400px image down to fit the A4 PDF width (approx 210mm)
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // 5. Add Image to PDF (Multi-page Logic)
+      let heightLeft = pdfHeight;
+      let position = 0;
+
+      // First Page
+      pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+
+      // Extra Pages
+      while (heightLeft >= 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save("interview-feedback.pdf");
+      toast.success("PDF Downloaded!", { id: toastId });
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      toast.error("Failed to export PDF", { id: toastId });
+    }
+
+    setShowButtons(true);
+  };
+
   return (
-    <main className="w-full max-w-7xl mx-auto mt-5 px-4 gap-8 flex flex-col">
+    <main
+      className="w-full max-w-7xl mx-auto mt-5 px-4 gap-8 flex flex-col"
+      ref={printRef}
+    >
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
             Interview Feedback
           </h1>
+          <p className="text-sm text-primary font-semibold">
+            Full Stack Developer | Junior
+          </p>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Completed on{" "}
             <span>
@@ -40,12 +144,13 @@ export const InterviewFeedback = ({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="inline-flex items-center px-4 py-2 border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded text-white dark:text-slate-200 bg-primary dark:bg-primary hover:bg-primary/90 dark:hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer">
+          <button
+            className="inline-flex items-center px-4 py-2 border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded text-white dark:text-slate-200 bg-primary dark:bg-primary hover:bg-primary/90 dark:hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer"
+            onClick={exportPdf}
+          >
             <CloudDownloadIcon size={14} /> &nbsp; Export PDF
           </button>
-          <button className="inline-flex items-center px-4 py-2 border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded text-white dark:text-slate-200 bg-primary dark:bg-primary hover:bg-primary/90 dark:hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer">
-            <Share2Icon size={14} /> &nbsp; Share
-          </button>
+          <Share mockId={interview.id} />
         </div>
       </section>
 
@@ -206,7 +311,13 @@ export const InterviewFeedback = ({
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase mr-2">
                   Audio Playback
                 </span>
-                <button className="text-primary hover:text-primary-hover p-1 rounded-full border border-primary/20 bg-primary/10 cursor-pointer">
+
+                <button
+                  className="text-primary hover:text-primary-hover p-1 rounded-full border border-primary/20 bg-primary/10 cursor-pointer"
+                  onClick={() =>
+                    playFullInterview(interview.questions as Question[])
+                  }
+                >
                   <PlayIcon size={16} fill="#7f22fe" color="#7f22fe" />
                 </button>
                 <div className="h-1 w-24 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
@@ -271,7 +382,9 @@ export const InterviewFeedback = ({
         </div>
       </section>
       {/* <!-- Sticky Footer --> */}
-      <div className="fixed bottom-0 left-0 right-0 bg-surface-light/80 dark:bg-surface-dark/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-4 px-4 z-10">
+      <div
+        className={`fixed bottom-0 left-0 right-0 bg-surface-light/80 dark:bg-surface-dark/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-4 px-4 z-10 ${showButtons ? "" : "hidden"}`}
+      >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="hidden md:flex items-center text-sm text-slate-500 dark:text-slate-400">
             <InfoIcon size={16} className="mr-2" />
@@ -283,13 +396,13 @@ export const InterviewFeedback = ({
           <div className="flex items-center gap-4 w-full md:w-auto justify-end">
             <Link
               href="/"
-              className="flex-1 md:flex-none justify-center px-6 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-medium text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors cursor-pointer"
+              className="flex-1 md:flex-none justify-center px-6 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-medium text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors cursor-pointer truncate text-center"
             >
               Back to Dashboard
             </Link>
             <Link
               href={`/interview-room/${interview.id}`}
-              className="flex-1 md:flex-none justify-center px-6 py-2.5 bg-primary hover:bg-primary-hover text-white font-medium text-sm rounded-lg shadow-lg shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all transform active:scale-95 cursor-pointer"
+              className="flex-1 md:flex-none justify-center px-6 py-2.5 bg-primary hover:bg-primary-hover text-white font-medium text-sm rounded-lg shadow-lg shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all transform active:scale-95 cursor-pointer truncate text-center"
             >
               Retry Interview
             </Link>
