@@ -56,10 +56,10 @@ export const History = ({
             )}
             {/* <!-- Row 1 --> */}
             {history &&
-              history.map((item, index) => (
+              history.map((item) => (
                 <div
                   className="grid grid-cols-12 gap-4 p-4 items-center border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
-                  key={item + "-" + index}
+                  key={item.id}
                 >
                   <div className="col-span-5 md:col-span-4 flex items-center gap-3">
                     <div className="w-8 h-8 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
@@ -130,7 +130,10 @@ export const History = ({
         </CardContent>
       </Card>
 
-      <PaginationPage count={count} itemsPerPage={5} />
+      <PaginationPage
+        count={count}
+        itemsPerPage={Number(process.env.NEXT_PUBLIC_ITEMS_PER_PAGE)}
+      />
     </div>
   );
 };

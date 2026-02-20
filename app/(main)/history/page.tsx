@@ -4,24 +4,26 @@ import {
   fetchInterviewsCount,
 } from "@/lib/actions/interview-actions";
 import { MockInterviewHistory } from "@/types/interview";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 const page = async ({
   searchParams,
 }: {
-  searchParams: { q: string; page: string };
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) => {
-  const q = searchParams?.q || "";
-  const page = searchParams?.page || "1";
+  const { q = "", page: page = "1" } = await searchParams;
 
-  const count = await fetchInterviewsCount();
-  const history = await fetchInterviewHistory(q, page);
+  const countResult = await fetchInterviewsCount();
+  const count = typeof countResult === "number" ? countResult : 0;
+  const history = (await fetchInterviewHistory(q, page)) ?? [];
+
   return (
-    <div className="w-full max-w-7xl mx-auto mt-5 px-4 gap-8 flex flex-col">
-      <History
-        count={count as number}
-        history={history as MockInterviewHistory[]}
-      />
-    </div>
+    <Suspense fallback={<Loading />}>
+      <div className="w-full max-w-7xl mx-auto mt-5 px-4 gap-8 flex flex-col">
+        <History count={count} history={history as MockInterviewHistory[]} />
+      </div>
+    </Suspense>
   );
 };
 export default page;

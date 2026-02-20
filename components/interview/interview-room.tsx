@@ -55,20 +55,21 @@ export const InterviewRoom = ({
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   const speakQuestion = () => {
+    // Stop mic to prevent TTS from being transcribed as user's answer
+    if (listening) {
+      SpeechRecognition.stopListening();
+    }
     // 1. Stop any previous speech
     window.speechSynthesis.cancel();
-
     if (isAudioEnabled && currentQuestion) {
       // 2. Create the utterance
       const speech = new SpeechSynthesisUtterance(currentQuestion.questionText);
-
       // 3. Optional: Customize voice
       // const voices = window.speechSynthesis.getVoices();
       // speech.voice = voices.find(v => v.lang === 'en-US') || null;
       speech.rate = 1.0; // Normal speed
       speech.pitch = 1.0; // Normal pitch
       speech.volume = 1.0;
-
       // 4. Speak
       window.speechSynthesis.speak(speech);
     }
@@ -297,7 +298,6 @@ export const InterviewRoom = ({
           </button>
         </div>
 
-        {/* <div className="fixed bottom-0 right-0 md:hidden gap-3 w-full flex justify-center bg-slate-800"> */}
         <button
           onClick={handleNext}
           disabled={isPending}
@@ -322,7 +322,6 @@ export const InterviewRoom = ({
             </>
           )}
         </button>
-        {/* </div> */}
       </footer>
     </main>
   );

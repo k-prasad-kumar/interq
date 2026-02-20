@@ -15,7 +15,7 @@ import { useState } from "react";
 import { createMockInterview } from "@/lib/actions/interview-actions";
 import { useRouter } from "next/navigation";
 
-export const NewSession = () => {
+export const NewInterview = () => {
   const [loading, setLoading] = useState(false);
   const [disable, setDisable] = useState(false);
   const [level, setLevel] = useState("");
