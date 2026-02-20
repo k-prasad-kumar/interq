@@ -14,7 +14,6 @@ import { useEffect, useRef } from "react";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
-import Signup from "@/assets/signin.webp";
 
 export const InterviewFeedbackShare = ({
   interview,
@@ -362,7 +361,7 @@ export const InterviewFeedbackShare = ({
                           width={32}
                           height={32}
                           alt="User Avatar"
-                          src={Signup}
+                          src={"/signin.webp"}
                         />
                       </div>
                       <div className="space-y-1">
