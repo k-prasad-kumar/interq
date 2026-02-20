@@ -19,7 +19,7 @@ export const Share = ({ mockId }: { mockId: string }) => {
         <DialogTitle>Share</DialogTitle>
         <div className="flex justify-between items-center">
           <Link
-            href={`https://www.facebook.com/sharer/sharer.php?u=${process.env.NEXT_PUBLIC_URL}/interview/feedback/${mockId}`}
+            href={`https://www.facebook.com/sharer/sharer.php?u=${process.env.NEXT_PUBLIC_URL}/interview/feedback/share/${mockId}`}
             className="flex flex-col items-center justify-center"
             target="_blank"
           >
@@ -42,7 +42,7 @@ export const Share = ({ mockId }: { mockId: string }) => {
             <span className="text-sm">Facebook</span>
           </Link>
           <Link
-            href={`https://www.messenger.com/t/?link=${process.env.NEXT_PUBLIC_URL}/interview/feedback/${mockId}`}
+            href={`https://www.messenger.com/t/?link=${process.env.NEXT_PUBLIC_URL}/interview/feedback/share/${mockId}`}
             className="flex flex-col items-center justify-center"
             target="_blank"
           >
@@ -63,7 +63,7 @@ export const Share = ({ mockId }: { mockId: string }) => {
             <span className="text-sm">Messenger</span>
           </Link>
           <Link
-            href={`https://x.com/intent/post?text=See this InterQ Interview Feedback&url=${process.env.NEXT_PUBLIC_URL}/interview/feedback/${mockId}`}
+            href={`https://x.com/intent/post?text=See this InterQ Interview Feedback&url=${process.env.NEXT_PUBLIC_URL}/interview/feedback/share/${mockId}`}
             className="flex flex-col items-center justify-center"
             target="_blank"
           >
@@ -86,7 +86,7 @@ export const Share = ({ mockId }: { mockId: string }) => {
             <span className="text-sm">Twitter</span>
           </Link>
           <Link
-            href={`https://api.whatsapp.com/send/?text=InterQ Interview Feedback: ${process.env.NEXT_PUBLIC_URL}/interview/feedback/${mockId}`}
+            href={`https://api.whatsapp.com/send/?text=InterQ Interview Feedback: ${process.env.NEXT_PUBLIC_URL}/interview/feedback/share/${mockId}`}
             className="flex flex-col items-center justify-center"
             target="_blank"
           >
@@ -107,7 +107,7 @@ export const Share = ({ mockId }: { mockId: string }) => {
             <span className="text-sm">WhatsApp</span>
           </Link>
           <Link
-            href={`mailto:?subject=See this InterQ Interview Feedback&body=InterQ Interview Feedback: ${process.env.NEXT_PUBLIC_URL}/interview/feedback/${mockId}`}
+            href={`mailto:?subject=See this InterQ Interview Feedback&body=InterQ Interview Feedback: ${process.env.NEXT_PUBLIC_URL}/interview/feedback/share/${mockId}`}
             className="flex flex-col items-center justify-center"
             target="_blank"
           >

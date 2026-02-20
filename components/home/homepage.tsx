@@ -46,7 +46,7 @@ export const Homepage = ({
                 </p>
                 <div className="flex items-center gap-2 md:gap-4">
                   <Button className="cursor-pointer" asChild>
-                    <Link href={"/session/new"}>
+                    <Link href={"/interview/new"}>
                       {" "}
                       <PlayIcon /> Start Interview
                     </Link>
@@ -56,7 +56,7 @@ export const Homepage = ({
                     variant={"outline"}
                     asChild
                   >
-                    <Link href={"/session/new"}>
+                    <Link href={"/interview/new"}>
                       <FileUpIcon /> Upload Resume
                     </Link>
                   </Button>

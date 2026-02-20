@@ -4,27 +4,23 @@ import {
   BotIcon,
   CheckCircle2Icon,
   CloudDownloadIcon,
-  InfoIcon,
   LightbulbIcon,
   PlayIcon,
 } from "lucide-react";
 import Image from "next/image";
 import { MockInterview, Question } from "@/types/interview";
-import Link from "next/link";
 import { Share } from "./share";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
+import Signup from "@/assets/signin.webp";
 
-export const InterviewFeedback = ({
-  userImage,
+export const InterviewFeedbackShare = ({
   interview,
 }: {
-  userImage: string;
   interview: MockInterview;
 }) => {
-  const [showButtons, setShowButtons] = useState(true);
   const overallScore = `${interview.overallScore}, 100`;
 
   const playFullInterview = (questions: Question[]) => {
@@ -58,7 +54,6 @@ export const InterviewFeedback = ({
   const exportPdf = async () => {
     const element = printRef.current;
     if (!element) return;
-    setShowButtons(false);
     const toastId = toast.loading("Generating PDF...");
 
     try {
@@ -115,8 +110,6 @@ export const InterviewFeedback = ({
       console.error("PDF Export Error:", error);
       toast.error("Failed to export PDF", { id: toastId });
     }
-
-    setShowButtons(true);
   };
 
   return (
@@ -360,7 +353,7 @@ export const InterviewFeedback = ({
                           width={32}
                           height={32}
                           alt="User Avatar"
-                          src={userImage}
+                          src={Signup}
                         />
                       </div>
                       <div className="space-y-1">
@@ -381,34 +374,6 @@ export const InterviewFeedback = ({
           </div>
         </div>
       </section>
-      {/* <!-- Sticky Footer --> */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 bg-surface-light/80 dark:bg-surface-dark/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-4 px-4 z-10 ${showButtons ? "" : "hidden"}`}
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="hidden md:flex items-center text-sm text-slate-500 dark:text-slate-400">
-            <InfoIcon size={16} className="mr-2" />
-            <span>
-              Pro tip: Review the transcript highlights to improve specific
-              answers.
-            </span>
-          </div>
-          <div className="flex items-center gap-4 w-full md:w-auto justify-end">
-            <Link
-              href="/"
-              className="flex-1 md:flex-none justify-center px-6 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-medium text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors cursor-pointer truncate text-center"
-            >
-              Back to Dashboard
-            </Link>
-            <Link
-              href={`/interview-room/${interview.id}`}
-              className="flex-1 md:flex-none justify-center px-6 py-2.5 bg-primary hover:bg-primary-hover text-white font-medium text-sm rounded-lg shadow-lg shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all transform active:scale-95 cursor-pointer truncate text-center"
-            >
-              Retry Interview
-            </Link>
-          </div>
-        </div>
-      </div>
     </main>
   );
 };

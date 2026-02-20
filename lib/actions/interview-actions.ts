@@ -10,7 +10,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 export async function createMockInterview(formData: FormData) {
   const user = await currentUser();
 
-  if (!user) return;
+  if (!user) return { error: "User not logged in." };
 
   const jobPosition = formData.get("jobPosition") as string;
   const jobDescription = formData.get("jobDescription") as string;
@@ -309,8 +309,6 @@ export async function fetchInterviewsCount() {
     return stats._count._all;
   } catch (error) {
     console.error("Error fetching stats:", error);
-    return {
-      totalInterviews: 0,
-    };
+    return 0;
   }
 }

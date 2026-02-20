@@ -1,15 +1,12 @@
 import NotFound from "@/app/not-found";
-import { InterviewFeedback } from "@/components/interview/interview-feedback";
 import { fetchMockInterview } from "@/lib/actions/interview-actions";
 import { MockInterview } from "@/types/interview";
-import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import Loading from "./loading";
+import { InterviewFeedbackShare } from "@/components/interview/interview-feedback-share";
 
 const page = async ({ params }: { params: Promise<{ mockId: string }> }) => {
   const mockId = (await params).mockId;
-
-  const user = await currentUser();
 
   // 1. Fetch the data (returns Prisma type)
   const interviewData = await fetchMockInterview(mockId);
@@ -25,7 +22,7 @@ const page = async ({ params }: { params: Promise<{ mockId: string }> }) => {
   return (
     <Suspense fallback={<Loading />}>
       {" "}
-      <InterviewFeedback userImage={user!.imageUrl} interview={interview} />
+      <InterviewFeedbackShare interview={interview} />
     </Suspense>
   );
 };
