@@ -12,7 +12,7 @@ import Image from "next/image";
 import { MockInterview, Question } from "@/types/interview";
 import Link from "next/link";
 import { Share } from "./share";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
@@ -25,9 +25,17 @@ export const InterviewFeedback = ({
   interview: MockInterview;
 }) => {
   const [showButtons, setShowButtons] = useState(true);
-  const overallScore = `${interview.overallScore}, 100`;
+  const overallScore = `${interview.overallScore ?? 0}, 100`;
 
-  const playFullInterview = (questions: Question[]) => {
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const playFullInterview = (questions: Question[] | undefined) => {
+    if (!questions?.length) return;
+
     // Stop anything currently playing
     window.speechSynthesis.cancel();
 
@@ -66,7 +74,7 @@ export const InterviewFeedback = ({
       // This ensures the PDF looks like the desktop version, not a mobile/cropped one.
       const desktopWidth = 1400;
       // We calculate height based on the new forced width (approximation) or just use scrollHeight
-      const elementHeight = element.scrollHeight;
+      // const elementHeight = element.scrollHeight;
 
       // 2. Capture Image with Forced Dimensions
       const dataUrl = await toPng(element, {
@@ -74,7 +82,7 @@ export const InterviewFeedback = ({
         // useCORS: true,
         // Force the canvas to be this wide
         width: desktopWidth,
-        height: elementHeight,
+        // height: elementHeight,
         style: {
           // Crucial: Force the element to layout at 1400px during capture
           width: `${desktopWidth}px`,
@@ -203,7 +211,7 @@ export const InterviewFeedback = ({
                   Technical
                 </div>
                 <div className="text-lg font-semibold text-slate-900 dark:text-white">
-                  {interview.technicalScore}/100
+                  {interview.technicalScore ?? "-"}/100
                 </div>
               </div>
               <div>
@@ -211,7 +219,7 @@ export const InterviewFeedback = ({
                   Communication
                 </div>
                 <div className="text-lg font-semibold text-slate-900 dark:text-white">
-                  {interview.communicationScore}/100
+                  {interview.communicationScore ?? "-"}/100
                 </div>
               </div>
               <div>
@@ -219,7 +227,7 @@ export const InterviewFeedback = ({
                   Confidence
                 </div>
                 <div className="text-lg font-semibold text-slate-900 dark:text-white">
-                  {interview.confidenceScore}/100
+                  {interview.confidenceScore ?? "-"}/100
                 </div>
               </div>
             </div>
@@ -315,6 +323,7 @@ export const InterviewFeedback = ({
                 <button
                   className="text-primary hover:text-primary-hover p-1 rounded-full border border-primary/20 bg-primary/10 cursor-pointer"
                   onClick={() =>
+                    interview.questions &&
                     playFullInterview(interview.questions as Question[])
                   }
                 >

@@ -1,18 +1,20 @@
-import NotFound from "@/app/not-found";
 import { fetchMockInterview } from "@/lib/actions/interview-actions";
 import { MockInterview } from "@/types/interview";
 import { Suspense } from "react";
 import Loading from "./loading";
 import { InterviewFeedbackShare } from "@/components/interview/interview-feedback-share";
+import { notFound } from "next/navigation";
 
 const page = async ({ params }: { params: Promise<{ mockId: string }> }) => {
   const mockId = (await params).mockId;
 
   // 1. Fetch the data (returns Prisma type)
-  const interviewData = await fetchMockInterview(mockId);
-
-  // 2. Handle 404
-  if (!interviewData) return <NotFound />;
+  let interviewData;
+  try {
+    interviewData = await fetchMockInterview(mockId);
+  } catch {
+    notFound();
+  }
 
   // 3. Type Assertion (The Fix)
   // We cast to 'unknown' first, then to your strict 'MockInterview' type.

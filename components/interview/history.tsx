@@ -132,7 +132,7 @@ export const History = ({
 
       <PaginationPage
         count={count}
-        itemsPerPage={Number(process.env.NEXT_PUBLIC_ITEMS_PER_PAGE)}
+        itemsPerPage={Number(process.env.NEXT_PUBLIC_ITEMS_PER_PAGE) || 5}
       />
     </div>
   );

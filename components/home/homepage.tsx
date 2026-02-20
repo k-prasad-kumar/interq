@@ -15,7 +15,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Link from "next/link";
 import { DashboardStats, MockInterviewHistory } from "@/types/interview";
 import { getRelativeTime } from "@/lib/get-relative-time";
-import Hero from "@/assets/hero2.png";
 import Image from "next/image";
 
 export const Homepage = ({
@@ -38,7 +37,7 @@ export const Homepage = ({
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
                   Ready to ace your next interview,{" "}
-                  <span className="text-primary">Alex?</span>
+                  <span className="text-primary">{stats.userName}?</span>
                 </h1>
                 <p className="text-slate-500 dark:text-slate-300 text-lg mb-8 max-w-lg">
                   Your AI coach is prepped with new questions. Choose a topic or
@@ -63,7 +62,7 @@ export const Homepage = ({
                 </div>
               </div>
               <div className="w-full lg:w-2/5 lg:flex justify-center order-1 lg:order-2 hidden">
-                <Image src={Hero} alt="hero" width={300} height={200} />
+                <Image src={"/hero.png"} alt="hero" width={300} height={200} />
               </div>
             </div>
           </CardContent>

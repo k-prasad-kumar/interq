@@ -5,7 +5,7 @@ import { NewInterview } from "@/components/interview/new-interview";
 const page = () => {
   return (
     <Suspense fallback={<Loading />}>
-      <NewInterview />;
+      <NewInterview />
     </Suspense>
   );
 };

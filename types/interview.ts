@@ -136,4 +136,5 @@ export interface DashboardStats {
   averageScore: number;
   completedInterviews: number;
   totalInterviews: number;
+  userName: string;
 }
