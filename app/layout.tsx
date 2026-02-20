@@ -18,8 +18,60 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "InterQ - An Intelligent Job Interviewer | Mock Interview",
-  description: "An Intelligent Job Interviewer | Interview Question Generator",
+  title: "InterQ | AI-Powered Mock Interviews",
+  description:
+    "Master your interview skills with InterQ's AI mock interviews. Get personalized questions, voice interaction, and detailed performance scoring.",
+
+  openGraph: {
+    title: "InterQ",
+    description:
+      "Master your interview skills with InterQ's AI mock interviews. Get personalized questions, voice interaction, and detailed performance scoring.",
+    url: process.env.NEXT_PUBLIC_URL,
+    siteName: "InterQ",
+    images: [
+      {
+        url: process.env.OG_IMAGE as string, // This points to public/og-image.jpg
+        width: 1200,
+        height: 630,
+        alt: "InterQ - AI Interview Coach",
+      },
+    ],
+    locale: "en-US",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "InterQ",
+    description:
+      "Master your interview skills with InterQ's AI mock interviews. Get personalized questions, voice interaction, and detailed performance scoring.",
+    images: [process.env.OG_IMAGE as string],
+  },
+  // generator: "Next.js",
+  // manifest: "/manifest.json",
+  // keywords: [
+  //   "InterQ",
+  //   "interq",
+  //   "Interq",
+  //   "AI Mockinterview",
+  //   "mock interview",
+  //   "interview",
+  // ],
+  authors: [{ name: "InterQ", url: process.env.NEXT_PUBLIC_URL }],
+  // viewport:
+  //   " minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
+  // icons: [
+  //   { rel: "apple-touch-icon", url: "/icons/logo-512.png" },
+  //   { rel: "icon", url: "/icons/logo-512.png" },
+  // ],
+};
+
+export const viewport = {
+  minimumScale: 1,
+  initialScale: 1,
+  width: "device-width",
+  shrinkToFit: "no",
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({

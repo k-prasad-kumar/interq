@@ -1,8 +1,6 @@
 import Image from "next/image";
 import { ModeToggle } from "../theme-toggle";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import logo from "@/assets/logo.webp";
-import signin from "@/assets/signin.webp";
 import Link from "next/link";
 
 export const Navbar = () => {
@@ -11,7 +9,7 @@ export const Navbar = () => {
       <nav className="w-full h-full flex justify-between items-center">
         <Link href="/" className="flex justify-center items-center gap-2">
           <Image
-            src={logo}
+            src={"/logo.webp"}
             width={25}
             height={25}
             alt="signin"
@@ -23,7 +21,7 @@ export const Navbar = () => {
           <SignedOut>
             <SignInButton>
               <Image
-                src={signin}
+                src={"/signin.webp"}
                 width={30}
                 height={30}
                 alt="signin"

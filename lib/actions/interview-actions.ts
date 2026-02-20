@@ -281,6 +281,7 @@ export async function fetchDashboardStats() {
       averageScore: Math.round(stats._avg.overallScore || 0), // Round to whole number (e.g., 78)
       completedInterviews: completedCount,
       totalInterviews: stats._count._all,
+      userName: user.fullName,
     };
   } catch (error) {
     console.error("Error fetching stats:", error);
@@ -288,6 +289,7 @@ export async function fetchDashboardStats() {
       averageScore: 0,
       completedInterviews: 0,
       totalInterviews: 0,
+      userName: "Loagn",
     };
   }
 }
