@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: "InterQ",
     images: [
       {
-        url: process.env.OG_IMAGE as string, // This points to public/og-image.jpg
+        url: "/og-image.png", // This points to public/og-image.jpg
         width: 1200,
         height: 630,
         alt: "InterQ - AI Interview Coach",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     title: "InterQ",
     description:
       "Master your interview skills with InterQ's AI mock interviews. Get personalized questions, voice interaction, and detailed performance scoring.",
-    images: [process.env.OG_IMAGE as string],
+    images: ["/og-image.png"],
   },
   // generator: "Next.js",
   // manifest: "/manifest.json",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   //   "mock interview",
   //   "interview",
   // ],
-  authors: [{ name: "InterQ", url: process.env.NEXT_PUBLIC_URL }],
+  authors: [{ name: "InterQ", url: "/og-image.png" }],
   // viewport:
   //   " minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
   // icons: [
@@ -66,11 +66,10 @@ export const metadata: Metadata = {
   // ],
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   minimumScale: 1,
   initialScale: 1,
   width: "device-width",
-  shrinkToFit: "no",
   viewportFit: "cover",
 };
 

@@ -5,7 +5,6 @@ import {
 } from "@/lib/actions/interview-actions";
 import { Suspense } from "react";
 import Loading from "./loading";
-import { DashboardStats } from "@/types/interview";
 
 export default async function Page() {
   const [stats, history] = await Promise.all([
@@ -17,7 +16,7 @@ export default async function Page() {
 
   return (
     <Suspense fallback={<Loading />}>
-      <Homepage stats={stats as DashboardStats} history={history ?? []} />
+      <Homepage stats={stats} history={history ?? []} />
     </Suspense>
   );
 }
