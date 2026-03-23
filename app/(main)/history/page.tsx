@@ -14,9 +14,14 @@ const page = async ({
 }) => {
   const { q = "", page: page = "1" } = await searchParams;
 
-  const countResult = await fetchInterviewsCount();
+  const [countResult, history] = await Promise.all([
+    fetchInterviewsCount(),
+    fetchInterviewHistory(q, page) ?? [],
+  ]);
+
   const count = typeof countResult === "number" ? countResult : 0;
-  const history = (await fetchInterviewHistory(q, page)) ?? [];
+  // const countResult = await fetchInterviewsCount();
+  // const history = (await fetchInterviewHistory(q, page)) ?? [];
 
   return (
     <Suspense fallback={<Loading />}>
