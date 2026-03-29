@@ -194,12 +194,12 @@ export const InterviewFeedback = ({
           {/* <!-- Score Summary Text --> */}
           <div className="md:col-span-9 bg-surface-light dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                Top 15%
-              </span>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                 {interview.feedbackTitle}
               </h2>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                Top 15%
+              </span>
             </div>
             <p className="text-slate-600 dark:text-slate-300 mb-4">
               {interview.feedbackSummary}
